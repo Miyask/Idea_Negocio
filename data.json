@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "alex@flowcraft.ai",
+      "password": "password123",
+      "name": "Alex"
+    }
+  ],
+  "flows": [
+    {
+      "id": "f1",
+      "userId": "1",
+      "name": "Sync Unity Cloud",
+      "status": "Activo",
+      "lastRun": "Hoy 10:30",
+      "type": "sync"
+    },
+    {
+      "id": "f2",
+      "userId": "1",
+      "name": "Test Reporter Pro",
+      "status": "Pausado",
+      "lastRun": "Ayer 18:45",
+      "type": "bug_report"
+    }
+  ],
+  "activities": [
+    {
+      "id": "a1",
+      "userId": "1",
+      "title": "Copia de Seguridad de Assets - Exitoso",
+      "time": "Hace 24 minutos",
+      "type": "BACKUP",
+      "status": "Exitoso"
+    },
+    {
+      "id": "a2",
+      "userId": "1",
+      "title": "Reporte de Feedback Generado",
+      "time": "Hace 2 horas",
+      "type": "REPORT",
+      "status": "Exitoso"
+    },
+    {
+      "id": "a3",
+      "userId": "1",
+      "title": "Exportación de Animaciones Completada",
+      "time": "Hace 5 horas",
+      "type": "RENDER",
+      "status": "Exitoso"
+    }
+  ]
+}
