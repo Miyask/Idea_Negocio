@@ -184,15 +184,15 @@ function Layout({ children }: { children: React.ReactNode }) {
 // --- Main App Component ---
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>({
+    id: '1',
+    email: 'alex@flowcraft.ai',
+    name: 'Alex'
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('fc_user');
-    if (saved) {
-      setUser(JSON.parse(saved));
-    }
-    setLoading(false);
+    // No login required, user is pre-set
   }, []);
 
   const login = async (email: string, pass: string) => {
@@ -223,22 +223,19 @@ export default function App() {
     <AuthContext.Provider value={{ user, login, logout, loading }}>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
           <Route 
             path="/*" 
             element={
-              user ? (
-                <Layout>
-                  <Routes>
-                    <Route path="/" element={<DashboardPage />} />
-                    <Route path="/services" element={<ServicesPage />} />
-                    <Route path="/flows" element={<FlowsPage />} />
-                    <Route path="/requests" element={<NewRequestPage />} />
-                  </Routes>
-                </Layout>
-              ) : (
-                <Navigate to="/login" />
-              )
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/services" element={<ServicesPage />} />
+                  <Route path="/flows" element={<FlowsPage />} />
+                  <Route path="/requests" element={<NewRequestPage />} />
+                  {/* Fallback to dashboard */}
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+              </Layout>
             } 
           />
         </Routes>
@@ -248,131 +245,6 @@ export default function App() {
 }
 
 // --- Pages ---
-
-function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      navigate('/');
-    } else {
-      setError('Email o contraseña incorrectos');
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-surface">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px] pointer-events-none"></div>
-      
-      <main className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 glass-panel rounded-[2rem] overflow-hidden shadow-2xl relative z-10 border border-outline-variant/10">
-        {/* Left Side */}
-        <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-surface-container-low to-surface relative overflow-hidden">
-          <div className="relative z-20">
-            <div className="flex items-center gap-3">
-              <Zap className="text-primary w-8 h-8 fill-primary/20" />
-              <span className="text-xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-primary to-secondary font-headline">FlowCraft AI</span>
-            </div>
-          </div>
-          <div className="relative z-20 mt-auto">
-            <h2 className="text-4xl font-bold font-headline text-on-surface tracking-tight mb-4">
-              Orquesta tu <br/>
-              <span className="text-primary">visión creativa.</span>
-            </h2>
-            <p className="text-on-surface-variant text-sm max-w-sm leading-relaxed">
-              Accede a la plataforma de automatización diseñada específicamente para arquitectos de contenido digital y desarrolladores de alto rendimiento.
-            </p>
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-surface to-transparent pointer-events-none"></div>
-        </div>
-
-        {/* Right Side */}
-        <div className="p-8 md:p-16 bg-surface flex flex-col justify-center">
-          <div className="md:hidden mb-8 flex items-center gap-2">
-            <Zap className="text-primary w-6 h-6" />
-            <span className="text-xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-primary to-secondary font-headline">FlowCraft AI</span>
-          </div>
-          <div className="space-y-2 mb-10">
-            <h1 className="text-3xl font-bold font-headline text-on-surface">Bienvenido</h1>
-            <p className="text-on-surface-variant text-sm">Introduce tus credenciales para acceder al panel.</p>
-          </div>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="block text-xs font-medium uppercase tracking-[0.1em] text-on-surface-variant font-label">Correo electrónico</label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                  <AtSign className="w-5 h-5 text-on-surface-variant group-focus-within:text-primary transition-colors" />
-                </div>
-                <input 
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary/30 text-on-surface placeholder:text-outline-variant/50 rounded-xl py-4 pl-12 pr-4 transition-all" 
-                  placeholder="alex@flowcraft.ai"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-xs font-medium uppercase tracking-[0.1em] text-on-surface-variant font-label">Contraseña</label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                  <Lock className="w-5 h-5 text-on-surface-variant group-focus-within:text-primary transition-colors" />
-                </div>
-                <input 
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary/30 text-on-surface placeholder:text-outline-variant/50 rounded-xl py-4 pl-12 pr-4 transition-all" 
-                  placeholder="••••••••"
-                  required
-                />
-                <div className="absolute inset-y-0 right-4 flex items-center">
-                  <Eye className="w-5 h-5 text-on-surface-variant cursor-pointer hover:text-on-surface transition-colors" />
-                </div>
-              </div>
-            </div>
-
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-
-            <div className="pt-4 space-y-4">
-              <button 
-                type="submit"
-                className="w-full py-4 bg-gradient-to-br from-primary to-secondary text-surface font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                Iniciar Sesión <ArrowRight className="w-5 h-5" />
-              </button>
-              <button type="button" className="w-full py-4 bg-transparent border-2 border-outline-variant/30 text-on-surface font-semibold rounded-xl hover:bg-surface-container-high transition-all">
-                Crear cuenta
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-10 flex flex-col items-center gap-6">
-            <div className="flex items-center gap-4 w-full">
-              <div className="h-[1px] flex-grow bg-outline-variant/20"></div>
-              <span className="text-[10px] text-on-surface-variant font-label uppercase tracking-widest">O continúa con</span>
-              <div className="h-[1px] flex-grow bg-outline-variant/20"></div>
-            </div>
-            <div className="flex gap-4 w-full">
-              <button className="flex-1 flex justify-center items-center py-3 bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors">
-                <Terminal className="w-5 h-5 opacity-80" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
 
 function StatCard({ icon: Icon, color, label, value, trend }: any) {
   return (
